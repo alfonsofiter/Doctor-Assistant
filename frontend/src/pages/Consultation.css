@@ -1,0 +1,218 @@
+.consultation {
+  max-width: 720px;
+}
+
+.back-link {
+  margin-bottom: 16px;
+}
+
+.consultation h1 {
+  color: var(--color-primary);
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.patient-form {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 200px;
+  text-align: left;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.form-field input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 14px;
+}
+
+.speaker-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.speaker-toggle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.speaker-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.speaker-switch:active {
+  transform: scale(0.97);
+}
+
+.speaker-switch-dokter {
+  background: var(--color-primary);
+}
+
+.speaker-switch-dokter:hover {
+  background: var(--color-primary-dark);
+}
+
+.speaker-switch-pasien {
+  background: #b45309;
+}
+
+.speaker-switch-pasien:hover {
+  background: #92400e;
+}
+
+.speaker-switch-hint {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.recording-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.recording-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #fef2f2;
+  color: var(--color-danger);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.recording-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-top: 8px;
+}
+
+.unsupported-warning {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--color-danger);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.interim-text {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.transcript-section {
+  text-align: left;
+}
+
+.transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.transcript-section h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.btn-danger-outline {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.transcript-box {
+  width: 100%;
+  min-height: 160px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.transcript-box::placeholder {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.interim-live {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.generate-btn {
+  width: 100%;
+}
+
+.generate-error {
+  color: var(--color-danger);
+  font-size: 13px;
+  margin: 0 0 8px;
+}
