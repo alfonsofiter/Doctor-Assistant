@@ -1,7 +1,77 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { generateSoapNote } from "../services/api";
+import { generateSoapNote, transcribeAudio } from "../services/api";
 import "./Consultation.css";
+
+function MicIcon() {
+  return (
+    <svg
+      className="btn-icon"
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="9" y="2" width="6" height="12" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <line x1="8" y1="22" x2="16" y2="22" />
+    </svg>
+  );
+}
+
+function StopIcon() {
+  return (
+    <svg
+      className="btn-icon"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <rect x="5" y="5" width="14" height="14" rx="2" />
+    </svg>
+  );
+}
+
+const RECORDER_MIME_CANDIDATES = [
+  "audio/webm;codecs=opus",
+  "audio/webm",
+  "audio/mp4",
+  "audio/ogg;codecs=opus",
+];
+
+function pickRecorderMimeType() {
+  if (typeof MediaRecorder === "undefined") return "";
+  return (
+    RECORDER_MIME_CANDIDATES.find((type) =>
+      MediaRecorder.isTypeSupported(type),
+    ) || ""
+  );
+}
+
+// Pemetaan label pembicara dari diarisasi (A, B, ...) ke peran.
+// Asumsi awal: yang bicara pertama adalah dokter.
+function buildRoleMap(speakers) {
+  const roles = ["Dokter", "Pasien"];
+  const map = {};
+  speakers.forEach((speaker, index) => {
+    map[speaker] = roles[index] || `Pembicara ${speaker}`;
+  });
+  return map;
+}
+
+function formatTurns(turns, roleMap) {
+  return turns
+    .map((turn) => `${roleMap[turn.speaker] || turn.speaker}: ${turn.text}`)
+    .join("\n");
+}
 
 function Consultation() {
   const navigate = useNavigate();
@@ -10,123 +80,97 @@ function Consultation() {
   const [consultationDate, setConsultationDate] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [interimText, setInterimText] = useState("");
-  const [isSupported, setIsSupported] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState("");
-  const [speaker, setSpeaker] = useState("dokter");
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcribeError, setTranscribeError] = useState("");
 
-  const recognitionRef = useRef(null);
-  const speakerRef = useRef("dokter");
-  const lastSpeakerRef = useRef(null);
-  // Teks mentah (belum di-final-kan browser) dari ucapan yang sedang berjalan.
-  const rawInterimRef = useRef("");
-  // Berapa karakter dari rawInterimRef yang SUDAH dikunci ke transkrip
-  // (karena pengguna mengklik switch di tengah ucapan).
-  const committedLengthRef = useRef(0);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
-  const commitLine = (targetSpeaker, text) => {
-    const cleanText = text.trim();
-    if (!cleanText) return;
-    const label = targetSpeaker === "dokter" ? "Dokter" : "Pasien";
-
-    setTranscript((prev) => {
-      if (lastSpeakerRef.current !== targetSpeaker) {
-        lastSpeakerRef.current = targetSpeaker;
-        const line = `${label}: ${cleanText}`;
-        return prev ? `${prev}\n${line}` : line;
-      }
-      return prev ? `${prev} ${cleanText}` : cleanText;
-    });
-  };
-
-  const handleSetSpeaker = (role) => {
-    if (role === speakerRef.current) return;
-
-    // Kunci teks yang sedang tampil SAAT INI ke peran yang lama, persis di
-    // detik tombol diklik, tanpa menunggu browser bilang "final".
-    const uncommitted = rawInterimRef.current.slice(committedLengthRef.current);
-    if (uncommitted.trim()) {
-      commitLine(speakerRef.current, uncommitted);
-    }
-    committedLengthRef.current = rawInterimRef.current.length;
-
-    setSpeaker(role);
-    speakerRef.current = role;
-    setInterimText("");
-  };
+  const canRecordAudio =
+    typeof navigator !== "undefined" &&
+    !!navigator.mediaDevices?.getUserMedia &&
+    typeof MediaRecorder !== "undefined";
 
   useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      setIsSupported(false);
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "id-ID";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.onstart = () => setIsRecording(true);
-    recognition.onend = () => {
-      setIsRecording(false);
-      setInterimText("");
-    };
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
-    };
-
-    recognition.onresult = (event) => {
-      let finalChunk = "";
-      let interimChunk = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finalChunk += result[0].transcript;
-        } else {
-          interimChunk += result[0].transcript;
-        }
-      }
-
-      rawInterimRef.current = interimChunk;
-
-      if (finalChunk) {
-        // Ambil bagian yang BELUM sempat dikunci manual lewat switch tombol
-        // (kalau tidak ada switch sama sekali, ini ya seluruh finalChunk).
-        const remaining = finalChunk.slice(committedLengthRef.current);
-        commitLine(speakerRef.current, remaining);
-        committedLengthRef.current = 0;
-        rawInterimRef.current = "";
-      }
-
-      // Tampilkan cuma bagian yang belum masuk ke transkrip, supaya teks
-      // yang sudah dikunci ke peran lama tidak terlihat dobel di preview.
-      setInterimText(interimChunk.slice(committedLengthRef.current));
-    };
-
-    recognitionRef.current = recognition;
-
     return () => {
-      recognition.stop();
+      const recorder = mediaRecorderRef.current;
+      if (recorder && recorder.state !== "inactive") {
+        recorder.onstop = null;
+        recorder.stop();
+      }
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     };
   }, []);
 
-  const handleStartRecording = () => {
-    if (!recognitionRef.current || isRecording) return;
+  const appendBatchToTranscript = (text) => {
+    setTranscript((prev) => (prev ? `${prev}\n${text}` : text));
+  };
+
+  const processRecordedAudio = async (blob) => {
+    setIsTranscribing(true);
+    setTranscribeError("");
     try {
-      recognitionRef.current.start();
+      const result = await transcribeAudio(blob);
+      const roleMap = buildRoleMap(result.speakers);
+      const text = formatTurns(result.turns, roleMap);
+      appendBatchToTranscript(text);
     } catch (error) {
-      console.error("Tidak bisa memulai rekaman:", error);
+      console.error("Gagal transkripsi Whisper:", error);
+      setTranscribeError(
+        error.message || "Gagal mentranskripsi audio. Coba lagi.",
+      );
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
+
+  const handleStartRecording = async () => {
+    if (isRecording || isTranscribing) return;
+    setTranscribeError("");
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = pickRecorderMimeType();
+      const recorder = new MediaRecorder(
+        stream,
+        mimeType ? { mimeType } : undefined,
+      );
+
+      audioChunksRef.current = [];
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+
+      recorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      recorder.onstop = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        setIsRecording(false);
+        const blob = new Blob(audioChunksRef.current, {
+          type: recorder.mimeType || mimeType || "audio/webm",
+        });
+        audioChunksRef.current = [];
+        if (blob.size > 0) processRecordedAudio(blob);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Tidak bisa mengakses mikrofon:", error);
+      setTranscribeError(
+        "Tidak bisa mengakses mikrofon. Pastikan izin mikrofon diberikan pada browser.",
+      );
     }
   };
 
   const handleStopRecording = () => {
-    if (!recognitionRef.current || !isRecording) return;
-    recognitionRef.current.stop();
+    if (!isRecording) return;
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== "inactive") recorder.stop();
   };
 
   const handleClearTranscript = () => {
@@ -136,9 +180,6 @@ function Consultation() {
     );
     if (confirmed) {
       setTranscript("");
-      lastSpeakerRef.current = null;
-      rawInterimRef.current = "";
-      committedLengthRef.current = 0;
     }
   };
 
@@ -179,10 +220,11 @@ function Consultation() {
 
       <h1>Konsultasi Baru</h1>
 
-      {!isSupported && (
+      {!canRecordAudio && (
         <p className="unsupported-warning">
-          Browser ini tidak mendukung Web Speech API. Gunakan Google Chrome atau
-          Microsoft Edge untuk merekam percakapan.
+          Browser ini tidak mendukung perekaman audio (MediaRecorder) atau
+          mikrofon tidak tersedia. Gunakan Chrome/Edge versi terbaru lewat
+          localhost atau HTTPS.
         </p>
       )}
 
@@ -209,39 +251,32 @@ function Consultation() {
           </div>
         </div>
 
-        <div className="speaker-toggle">
-          <span className="speaker-toggle-label">Yang sedang bicara:</span>
-          <button
-            type="button"
-            className={`speaker-switch speaker-switch-${speaker}`}
-            onClick={() =>
-              handleSetSpeaker(speaker === "dokter" ? "pasien" : "dokter")
-            }
-          >
-            {speaker === "dokter" ? "Dokter" : "Pasien"}
-            <span className="speaker-switch-hint">(klik untuk ganti)</span>
-          </button>
-        </div>
-
         <div className="recording-controls">
           <button
             className="btn btn-primary"
             onClick={handleStartRecording}
-            disabled={!isSupported || isRecording}
+            disabled={!canRecordAudio || isRecording || isTranscribing}
           >
+            <MicIcon />
             Mulai Rekam
           </button>
           <button
             className="btn btn-secondary"
             onClick={handleStopRecording}
-            disabled={!isSupported || !isRecording}
+            disabled={!canRecordAudio || !isRecording}
           >
+            <StopIcon />
             Stop
           </button>
           {isRecording && (
             <span className="recording-indicator">
-              <span className="recording-dot" /> Merekam sebagai{" "}
-              {speaker === "dokter" ? "Dokter" : "Pasien"}...
+              <span className="recording-dot" />{" "}
+              Merekam (pembicara dipisah otomatis setelah Stop)...
+            </span>
+          )}
+          {isTranscribing && (
+            <span className="processing-indicator">
+              Memproses audio &amp; memisahkan pembicara...
             </span>
           )}
         </div>
@@ -263,23 +298,17 @@ function Consultation() {
           className="transcript-box"
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
-          placeholder="Transkripsi akan muncul di sini saat perekaman berjalan. Anda juga bisa mengetik/mengedit langsung di sini untuk memperbaiki kesalahan deteksi suara."
+          placeholder="Transkripsi akan muncul di sini setelah rekaman selesai diproses. Anda juga bisa mengetik/mengedit langsung di sini untuk memperbaiki hasil deteksi."
         />
 
-        {interimText && (
-          <p className="interim-live">
-            Sedang mendengar:{" "}
-            <span className="interim-text">{interimText}</span>
-          </p>
-        )}
+        {transcribeError && <p className="generate-error">{transcribeError}</p>}
 
         <p className="hint">
-          Sebelum berbicara, tekan tombol &quot;Dokter&quot; atau
-          &quot;Pasien&quot; di atas sesuai giliran bicara. Transkrip akan
-          otomatis diberi label sesuai peran yang aktif. Anda juga dapat
-          mengedit langsung teks di atas untuk memperbaiki kata yang salah
-          dikenali. Catatan: pemisahan pembicara di MVP ini bersifat manual
-          (dipilih pengguna), bukan deteksi otomatis berbasis suara.
+          Tekan <strong>Mulai Rekam</strong>, lakukan percakapan, lalu tekan{" "}
+          <strong>Stop</strong>. Audio dikirim ke OpenAI Whisper untuk
+          ditranskripsi dan dipisahkan per pembicara secara otomatis. Pembicara
+          pertama otomatis diberi label <em>Dokter</em>. Periksa dan edit hasil
+          di kotak di atas jika diperlukan.
         </p>
       </section>
 
@@ -297,3 +326,4 @@ function Consultation() {
 }
 
 export default Consultation;
+
