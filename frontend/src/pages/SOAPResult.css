@@ -1,106 +1,318 @@
-.soap-result {
-  max-width: 760px;
-  text-align: left;
-}
-
-.soap-result h1 {
-  color: var(--color-primary);
-  font-size: 26px;
-  margin: 8px 0 16px;
-}
-
-.ai-warning {
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #92400e;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 20px;
-}
-
-.info-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 16px;
-}
-
-.info-card h2 {
-  font-size: 15px;
-  margin: 0 0 12px;
-  color: var(--color-primary);
-}
-
-.info-card p {
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-.transcript-readonly {
-  white-space: pre-wrap;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-}
-
-.soap-field {
-  margin-bottom: 16px;
-}
-
-.soap-field:last-child {
-  margin-bottom: 0;
-}
-
-.soap-field h3 {
-  font-size: 13px;
-  color: var(--color-primary-dark);
-  margin: 0 0 4px;
-}
-
-.soap-field p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  white-space: pre-wrap;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 24px;
-}
-
-.action-buttons .btn {
-  padding: 12px 20px;
-}
-
-.soap-edit-box {
+.soap-result-page-wrap {
   width: 100%;
-  min-height: 80px;
-  font-family: inherit;
-  font-size: 14px;
+  min-height: calc(100vh - 80px);
+  background: #F4F4F6;
+  padding: 28px 24px 64px;
+  box-sizing: border-box;
+}
+
+.soap-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.empty-soap-box {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #ECECF0;
+  padding: 48px 24px;
+  text-align: center;
+  max-width: 500px;
+  margin: 40px auto;
+}
+
+.btn-primary-capsule {
+  display: inline-block;
+  margin-top: 14px;
+  background: #FF5B35;
+  color: #FFFFFF;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.soap-top-bar {
+  display: flex;
+  align-items: center;
+}
+
+.soap-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.soap-title-row h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.soap-subtitle {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.soap-header-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-header-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #334155;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.btn-header-action:hover {
+  background: #F8FAFC;
+  color: #0F172A;
+  border-color: #CBD5E1;
+}
+
+.btn-header-action.save {
+  background: #FF5B35;
+  color: #FFFFFF;
+  border-color: #FF5B35;
+}
+
+.btn-header-action.save:hover:not(:disabled) {
+  background: #E84D27;
+}
+
+.btn-header-action.pdf {
+  background: #0D9488;
+  color: #FFFFFF;
+  border-color: #0D9488;
+}
+
+.btn-header-action.pdf:hover {
+  background: #0B7A70;
+}
+
+.ai-legal-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFF7ED;
+  border: 1px solid #FFEDD5;
+  color: #9A3412;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.save-notification-pill {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.soap-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid #ECECF0;
+  padding: 22px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+/* Patient Overview Card */
+.patient-overview-grid {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.patient-avatar-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #FFF1ED;
+  color: #FF5B35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  border: 1px solid #FFD8CE;
+}
+
+.patient-main-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 2px;
+}
+
+.patient-submeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748B;
+  flex-wrap: wrap;
+}
+
+/* Transcript Review Card */
+.card-inner-header {
+  margin-bottom: 10px;
+}
+
+.card-section-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0;
+}
+
+.transcript-read-content {
+  background: #F8FAFC;
+  border: 1px solid #EEF2F6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #334155;
   line-height: 1.6;
-  padding: 10px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
+  max-height: 160px;
+  overflow-y: auto;
+  white-space: pre-line;
+}
+
+/* 4 SOAP Cards Grid */
+.soap-four-sections-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.section-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F1F3F5;
+}
+
+.soap-letter-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.soap-letter-badge.s { background: #3B82F6; }
+.soap-letter-badge.o { background: #0D9488; }
+.soap-letter-badge.a { background: #FF5B35; }
+.soap-letter-badge.p { background: #8B5CF6; }
+
+.section-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.section-helper {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.soap-text-block {
+  font-size: 13.5px;
+  color: #1E293B;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.soap-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #CBD5E1;
+  font-size: 13px;
+  font-family: inherit;
+  color: #1E293B;
+  line-height: 1.6;
   resize: vertical;
+  box-sizing: border-box;
 }
 
-.generate-error {
-  color: var(--color-danger);
+.soap-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.btn-secondary-action {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  padding: 10px 20px;
+  border-radius: 999px;
   font-size: 13px;
-  margin: 8px 0 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.save-success {
-  color: var(--color-primary-dark);
-  font-size: 13px;
-  margin: 8px 0 0;
+.btn-secondary-action:hover:not(:disabled) {
+  background: #F8FAFC;
+  color: #0F172A;
 }
 
-.empty-state {
-  color: var(--color-text-muted);
-  margin-bottom: 16px;
+.btn-primary-action {
+  background: #FF5B35;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(255, 91, 53, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-primary-action:hover:not(:disabled) {
+  background: #E84D27;
 }

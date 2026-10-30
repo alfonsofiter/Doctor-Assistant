@@ -1,88 +1,608 @@
-.history {
-  max-width: 900px;
-  text-align: left;
+.history-page-wrap {
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 24px 28px 64px;
+  box-sizing: border-box;
 }
 
-.history h1 {
-  color: var(--color-primary);
-  font-size: 26px;
-  margin: 8px 0 24px;
+.history-top-actions {
+  margin-bottom: 16px;
 }
 
-.empty-state {
-  color: var(--color-text-muted);
-  font-size: 14px;
-  background: var(--color-surface);
-  border: 1px dashed var(--color-border);
-  border-radius: 8px;
-  padding: 24px;
-  text-align: center;
-}
-
-.generate-error {
-  color: var(--color-danger);
-  font-size: 14px;
-}
-
-.history-table {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.history-row {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 2fr;
-  gap: 12px;
-  padding: 14px 20px;
-  align-items: center;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 14px;
-}
-
-.history-row:last-child {
-  border-bottom: none;
-}
-
-.history-row-head {
-  font-weight: 600;
-  color: var(--color-text-muted);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background: var(--color-bg);
-}
-
-.status-badge {
-  display: inline-block;
-  width: fit-content;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
+.btn-back-plain {
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  cursor: pointer;
+  padding: 6px 16px;
   border-radius: 999px;
-  padding: 2px 10px;
-  font-size: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  transition: all 0.15s ease;
 }
 
-.row-actions {
+.btn-back-plain:hover {
+  background: #F8FAFC;
+  color: #FF5B35;
+  border-color: #FF5B35;
+}
+
+/* Directory View */
+.directory-header-row {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.main-page-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+}
+
+.main-page-subtitle {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.btn-primary-pill {
+  background: #FF5B35;
+  color: #FFFFFF;
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(255, 91, 53, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-primary-pill:hover {
+  background: #E84D27;
+  transform: translateY(-1px);
+}
+
+.history-filters-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
   flex-wrap: wrap;
 }
 
-.row-actions .btn {
-  padding: 8px 14px;
+.search-input-wrap {
+  flex: 1;
+  min-width: 240px;
+}
+
+.filter-input-modern {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  font-size: 13px;
+  color: #1E293B;
+  outline: none;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.15s ease;
+}
+
+.filter-input-modern:focus {
+  border-color: #FF5B35;
+}
+
+.table-card-container {
+  background: #FFFFFF;
+  border: 1px solid #ECECF0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.patient-table-head {
+  display: grid;
+  grid-template-columns: 120px 1.5fr 140px 160px 180px;
+  align-items: center;
+  padding: 12px 20px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #EEF2F6;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.patient-table-row {
+  display: grid;
+  grid-template-columns: 120px 1.5fr 140px 160px 180px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid #F1F3F5;
+  font-size: 13px;
+  color: #334155;
+  transition: background 0.15s ease;
+}
+
+.patient-table-row:hover {
+  background: #F8FAFC;
+}
+
+.patient-table-row:last-child {
+  border-bottom: none;
+}
+
+.rm-badge {
+  display: inline-block;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #0F172A;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-family: ui-monospace, monospace;
+}
+
+.patient-strong-name {
+  color: #0F172A;
+  font-size: 13.5px;
+}
+
+.visit-count-tag {
+  display: inline-block;
+  background: #E6FFFA;
+  color: #0D9488;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid #B2F5EA;
+}
+
+.last-visit-cell {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.btn-open-rme {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #1E293B;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-open-rme:hover {
+  background: #FF5B35;
+  color: #FFFFFF;
+  border-color: #FF5B35;
+}
+
+/* ============================================================ */
+/* RME RUMAH SAKIT / SIMRS STYLE (SESUAI GAMBAR 1 & 2 DARI USER) */
+/* ============================================================ */
+.hospital-rme-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Kartu Header RME Rumah Sakit (Gambar 2) */
+.rme-hospital-header-card {
+  background: #FFFFFF;
+  border: 1px solid #ECECF0;
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.rme-action-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rme-badges-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-resume-btn {
+  background: #4B5563;
+  color: #FFFFFF;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.badge-status-btn {
+  background: #EF4444;
+  color: #FFFFFF;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.rme-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-print-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-print-action:hover {
+  background: #F1F5F9;
+  border-color: #94A3B8;
+}
+
+.btn-print-action.primary {
+  background: #0D9488;
+  color: #FFFFFF;
+  border-color: #0D9488;
+}
+
+.btn-print-action.primary:hover {
+  background: #0F766E;
+}
+
+/* Banner Identitas Pasien (Warna Biru Muda / Cyan Halus persis Gambar 2) */
+.rme-patient-identity-banner {
+  display: grid;
+  grid-template-columns: 120px 1.5fr 1.5fr 1.5fr 1.5fr;
+  background: #E0F2FE;
+  border: 1px solid #BAE6FD;
+  border-radius: 10px;
+  padding: 12px 18px;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .rme-patient-identity-banner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.identity-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.identity-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0369A1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.identity-value {
+  font-size: 12.5px;
+  color: #0F172A;
+  font-weight: 600;
+}
+
+.identity-value.strong {
+  font-weight: 800;
+  color: #0369A1;
+  font-family: ui-monospace, monospace;
+}
+
+/* Sub-bar Riwayat Kunjungan */
+.rme-records-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.rme-records-meta-bar h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0;
+}
+
+.btn-add-visit-pill {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-add-visit-pill:hover {
+  background: #FF5B35;
+  color: #FFFFFF;
+  border-color: #FF5B35;
+}
+
+/* ============================================================ */
+/* TABEL REKAM MEDIS RUMAH SAKIT / PUSKESMAS (Persis Gambar 1) */
+/* ============================================================ */
+.rme-table-wrapper {
+  background: #FFFFFF;
+  border: 1px solid #ECECF0;
+  border-radius: 14px;
+  overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.rme-grid-header {
+  display: grid;
+  grid-template-columns: 45px 120px 140px 1.5fr 1.5fr 1.3fr 1.6fr;
+  background: #E0F2FE;
+  border-bottom: 2px solid #BAE6FD;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0369A1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  min-width: 1050px;
+}
+
+.rme-grid-rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 1050px;
+}
+
+.rme-grid-row {
+  display: grid;
+  grid-template-columns: 45px 120px 140px 1.5fr 1.5fr 1.3fr 1.6fr;
+  padding: 16px 14px;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 12px;
+  color: #1E293B;
+  align-items: start;
+}
+
+.rme-grid-row:nth-child(even) {
+  background: #F8FAFC;
+}
+
+.rme-grid-row:last-child {
+  border-bottom: none;
+}
+
+.visit-row-number {
+  font-weight: 800;
+  color: #64748B;
   font-size: 13px;
 }
 
-@media (max-width: 640px) {
-  .history-row {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
+.visit-exact-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0F172A;
+  margin-bottom: 4px;
+}
 
-  .history-row-head {
-    display: none;
-  }
+.badge-table-resume {
+  display: inline-block;
+  background: #0D9488;
+  color: #FFFFFF;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+
+.clinic-room-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.doctor-in-charge-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #EF4444; /* Warna merah khas dokter seperti di Gambar 1 */
+  margin-top: 2px;
+}
+
+.row-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.btn-tiny-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #0369A1;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.btn-tiny-link:hover {
+  color: #075985;
+}
+
+.btn-tiny-link.text-danger {
+  color: #DC2626;
+}
+
+.cell-content-box {
+  padding-right: 12px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* Vital Signs Layout (Sesuai Objective di Gambar 1) */
+.vital-signs-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+.vital-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+}
+
+.vital-k {
+  color: #64748B;
+  font-weight: 600;
+}
+
+.vital-v {
+  color: #0F172A;
+  font-weight: 700;
+}
+
+.obj-text-desc {
+  font-size: 11.5px;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.rme-mini-lab-card {
+  background: #E2E8F0;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 11px;
+}
+
+.lab-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #334155;
+  font-size: 9.5px;
+  margin-bottom: 2px;
+}
+
+.lab-badge-tag {
+  background: #FFFFFF;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: #0F172A;
+}
+
+.lab-result-line {
+  color: #475569;
+  font-size: 10.5px;
+}
+
+/* Assessment dengan Kode ICD-10 Berwarna Merah (Gambar 1) */
+.icd-assessment-red {
+  color: #DC2626; /* Merah seperti 0-I15-Secondary hypertension di Gambar 1 */
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Plan & Resep Obat */
+.plan-status-line {
+  font-size: 11.5px;
+  color: #1E293B;
+  margin-bottom: 4px;
+}
+
+.plan-narrative {
+  font-size: 11.5px;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.mini-prescription-table {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.presc-head {
+  display: grid;
+  grid-template-columns: 1.5fr 40px 1.2fr;
+  background: #F1F5F9;
+  padding: 4px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.presc-row {
+  display: grid;
+  grid-template-columns: 1.5fr 40px 1.2fr;
+  padding: 4px 6px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 10.5px;
+  color: #1E293B;
+}
+
+.btn-print-visit-wrap {
+  margin-top: 6px;
+}
+
+.btn-print-single-visit {
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  color: #0F172A;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-print-single-visit:hover {
+  background: #E2E8F0;
 }

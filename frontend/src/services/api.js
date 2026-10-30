@@ -8,11 +8,27 @@ export async function checkBackendHealth() {
   return response.json();
 }
 
-export async function generateSoapNote(transcript) {
+export async function validateTranscript(transcript, context = "", stage = 1, vitalSigns = {}) {
+  const response = await fetch(`${BASE_URL}/soap/validate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transcript, context, stage, vitalSigns }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Gagal memvalidasi transkrip.");
+  }
+
+  return data;
+}
+
+export async function generateSoapNote(transcript, context = "", vitalSigns = {}) {
   const response = await fetch(`${BASE_URL}/soap/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ transcript }),
+    body: JSON.stringify({ transcript, context, vitalSigns }),
   });
 
   const data = await response.json();
@@ -74,6 +90,7 @@ export async function deleteConsultation(id) {
     throw new Error(data.error || "Gagal menghapus konsultasi.");
   }
 }
+
 export async function transcribeAudio(audioBlob) {
   const formData = new FormData();
   formData.append("audio", audioBlob, "rekaman");
@@ -90,4 +107,26 @@ export async function transcribeAudio(audioBlob) {
   }
 
   return data;
+}
+
+// Daftar pasien unik (berdasarkan No. Identitas)
+export async function getPatients() {
+  const response = await fetch(`${BASE_URL}/consultations/patients`);
+  if (!response.ok) {
+    throw new Error("Gagal mengambil daftar pasien.");
+  }
+  return response.json();
+}
+
+// Riwayat kunjungan pasien berdasarkan No. Identitas atau nama
+export async function getConsultationsByPatientId(patientId, patientName = '') {
+  const query = patientName ? `?name=${encodeURIComponent(patientName)}` : '';
+  const targetId = patientId || 'ALL';
+  const response = await fetch(
+    `${BASE_URL}/consultations/by-patient/${encodeURIComponent(targetId)}${query}`
+  );
+  if (!response.ok) {
+    throw new Error("Gagal mengambil riwayat pasien.");
+  }
+  return response.json();
 }

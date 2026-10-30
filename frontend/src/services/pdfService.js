@@ -7,13 +7,13 @@ const CONTENT_WIDTH = PAGE_WIDTH - MARGIN * 2;
 const FOOTER_RESERVE = 14;
 
 const COLOR = {
-  primary: [15, 118, 110],
-  primaryDark: [11, 92, 86],
-  sectionBg: [224, 242, 241],
-  border: [209, 213, 219],
-  text: [31, 41, 55],
-  textMuted: [107, 114, 128],
-  warnBg: [255, 251, 235],
+  primary: [255, 91, 53], // Coral brand color #FF5B35
+  primaryDark: [232, 77, 39],
+  sectionBg: [255, 241, 237],
+  border: [229, 231, 235],
+  text: [15, 23, 42],
+  textMuted: [100, 116, 139],
+  warnBg: [254, 243, 199],
   warnBorder: [253, 230, 138],
   warnText: [146, 64, 14],
 };
@@ -38,14 +38,14 @@ function drawLetterhead(doc) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.text(
-    "Physician Note Taker Assistant untuk Penulisan Medical Record",
+    "Clinical AI Scribe & Bilingual Consultation Documentation (Jawa - Indonesia)",
     MARGIN,
     17,
   );
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("CATATAN MEDIS (SOAP)", PAGE_WIDTH - MARGIN, 14, { align: "right" });
+  doc.text("REKAM MEDIS (SOAP)", PAGE_WIDTH - MARGIN, 14, { align: "right" });
 
   doc.setTextColor(...COLOR.text);
   return 32;
@@ -76,7 +76,7 @@ function drawWarningBox(doc, y, text) {
 function drawPatientInfoBox(
   doc,
   y,
-  { patientName, consultationDate, consultationId },
+  { patientName, patientId, consultationDate, consultationId },
 ) {
   const boxHeight = 22;
 
@@ -92,23 +92,27 @@ function drawPatientInfoBox(
   doc.setFontSize(8);
   doc.setTextColor(...COLOR.textMuted);
   doc.text("NAMA / INISIAL PASIEN", col1X, y + 7);
-  doc.text("TANGGAL KONSULTASI", col2X, y + 7);
+  doc.text("NO. REKAM MEDIS & TANGGAL", col2X, y + 7);
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.setTextColor(...COLOR.text);
   doc.text(patientName || "Tidak disebutkan", col1X, y + 13);
-  doc.text(consultationDate || "Tidak disebutkan", col2X, y + 13);
+  doc.text(
+    `${patientId ? `[${patientId}] ` : ""}${consultationDate || "Tidak disebutkan"}`,
+    col2X,
+    y + 13,
+  );
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.5);
   doc.setTextColor(...COLOR.textMuted);
   const printedAt = new Date().toLocaleString("id-ID");
   const idLabel = consultationId
-    ? `ID Konsultasi: #${consultationId}`
-    : "ID Konsultasi: (belum tersimpan)";
+    ? `ID RME: #${consultationId}`
+    : "ID RME: (tersimpan sesi ini)";
   doc.text(
-    `${idLabel}   |   Dicetak pada: ${printedAt}`,
+    `${idLabel}   |   Verifikasi Kelayakan: Lolos Filtering   |   Dicetak: ${printedAt}`,
     col1X,
     y + boxHeight - 3,
   );
@@ -174,7 +178,7 @@ function drawSignatureBlock(doc, y) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   doc.setTextColor(...COLOR.textMuted);
-  doc.text("(Nama & Tanda Tangan)", x + blockWidth / 2, lineY + 4, {
+  doc.text("(Nama & Tanda Tangan Dokter)", x + blockWidth / 2, lineY + 4, {
     align: "center",
   });
 
@@ -212,14 +216,14 @@ function drawTranscriptSection(doc, transcript) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("LAMPIRAN - TRANSKRIPSI PERCAKAPAN", MARGIN, 10);
+  doc.text("LAMPIRAN - TRANSKRIPSI PERCAKAPAN SUMBER", MARGIN, 10);
 
   let y = 24;
   doc.setTextColor(...COLOR.textMuted);
   y = writeWrapped(
     doc,
     y,
-    "Dokumentasi internal. Transkripsi mentah hasil speech-to-text, belum tentu merepresentasikan kalimat baku.",
+    "Transkripsi audio tutur klinis (Diarized Speech-to-Text). Menjaga orisinalitas anamnesis dokter-pasien.",
     { fontSize: 8, lineHeight: 4, style: "italic" },
   );
   y += 4;
@@ -245,7 +249,7 @@ function drawFooters(doc) {
     doc.setFontSize(7.5);
     doc.setTextColor(...COLOR.textMuted);
     doc.text(
-      "Dihasilkan oleh Doctor Assistant - dokumen bantu, wajib divalidasi dokter",
+      "Dihasilkan oleh Doctor Assistant - Dokumen resmi wajib divalidasi dan ditandatangani dokter",
       MARGIN,
       PAGE_HEIGHT - 7,
     );
@@ -262,6 +266,7 @@ function drawFooters(doc) {
 
 export function downloadSoapPdf({
   patientName,
+  patientId,
   consultationDate,
   transcript,
   soap,
@@ -278,6 +283,7 @@ export function downloadSoapPdf({
   );
   y = drawPatientInfoBox(doc, y, {
     patientName,
+    patientId,
     consultationDate,
     consultationId,
   });
