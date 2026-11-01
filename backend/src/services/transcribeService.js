@@ -2,7 +2,7 @@ const OpenAI = require("openai");
 const { toFile } = require("openai");
 
 const MODEL =
-  process.env.OPENAI_TRANSCRIBE_MODEL || "gpt-4o-transcribe-diarize";
+  process.env.OPENAI_TRANSCRIBE_MODEL || "whisper-1";
 const LANGUAGE =
   process.env.OPENAI_TRANSCRIBE_LANGUAGE === undefined
     ? "id"
@@ -62,20 +62,21 @@ function mergeSegmentsIntoTurns(segments = []) {
 
 async function transcribeWithDiarization({ buffer, mimeType }) {
   const openai = getClient();
-
-  const file = await toFile(buffer, `rekaman.${extensionFromMime(mimeType)}`, {
-    type: mimeType || "audio/webm",
-  });
+  const ext = extensionFromMime(mimeType);
+  const type = mimeType || "audio/webm";
 
   const params = {
-    file,
+    file: await toFile(buffer, `rekaman.${ext}`, { type }),
     model: MODEL,
     prompt: CLINICAL_WHISPER_PROMPT,
   };
 
+  // Only diarize models support diarized_json; whisper-1 uses verbose_json
   if (MODEL.includes("diarize")) {
     params.response_format = "diarized_json";
     params.chunking_strategy = "auto";
+  } else {
+    params.response_format = "verbose_json";
   }
 
   if (LANGUAGE) params.language = LANGUAGE;
@@ -83,10 +84,10 @@ async function transcribeWithDiarization({ buffer, mimeType }) {
   try {
     const result = await openai.audio.transcriptions.create(params);
 
+    // Diarized model returns segments with speaker labels
     if (result.segments && Array.isArray(result.segments)) {
       const turns = mergeSegmentsIntoTurns(result.segments);
       const speakers = [...new Set(turns.map((turn) => turn.speaker))];
-
       return {
         text: result.text || "",
         duration: result.duration ?? null,
@@ -95,6 +96,7 @@ async function transcribeWithDiarization({ buffer, mimeType }) {
       };
     }
 
+    // whisper-1 verbose_json: try to split by newlines, else single speaker
     const rawText = result.text || "";
     const lines = rawText.split(/\r?\n/).filter((l) => l.trim().length > 0);
     const turns = [];
@@ -115,23 +117,29 @@ async function transcribeWithDiarization({ buffer, mimeType }) {
       turns,
     };
   } catch (error) {
+    // Fallback: recreate file object (original stream may be consumed) and use whisper-1
     if (MODEL !== "whisper-1") {
-      console.warn("Mencoba fallback ke model whisper-1...", error.message);
-      const fallbackParams = {
-        file,
-        model: "whisper-1",
-        prompt: CLINICAL_WHISPER_PROMPT,
-      };
-      if (LANGUAGE) fallbackParams.language = LANGUAGE;
-
-      const fallbackResult = await openai.audio.transcriptions.create(fallbackParams);
-      const rawText = fallbackResult.text || "";
-      return {
-        text: rawText,
-        duration: fallbackResult.duration ?? null,
-        speakers: ["A", "B"],
-        turns: [{ speaker: "A", text: rawText }],
-      };
+      console.warn("Fallback ke whisper-1:", error.message);
+      try {
+        const fallbackFile = await toFile(buffer, `rekaman.${ext}`, { type });
+        const fallbackResult = await openai.audio.transcriptions.create({
+          file: fallbackFile,
+          model: "whisper-1",
+          prompt: CLINICAL_WHISPER_PROMPT,
+          response_format: "verbose_json",
+          ...(LANGUAGE ? { language: LANGUAGE } : {}),
+        });
+        const rawText = fallbackResult.text || "";
+        return {
+          text: rawText,
+          duration: fallbackResult.duration ?? null,
+          speakers: ["A", "B"],
+          turns: rawText ? [{ speaker: "A", text: rawText }] : [],
+        };
+      } catch (fallbackError) {
+        console.error("Fallback whisper-1 juga gagal:", fallbackError.message);
+        throw fallbackError;
+      }
     }
     throw error;
   }

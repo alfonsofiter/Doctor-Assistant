@@ -227,56 +227,56 @@ doctor-assistant-mvp-v2/
 │       ├── pages/
 │       │   ├── Dashboard.jsx            # Halaman beranda ringkas & profesional
 │       │   ├── Dashboard.css            # Styling beranda
-│       │   ├── Consultation.jsx         # Halaman perekaman suara & filter 2 tahap
-│       │   ├── Consultation.css         # Styling halaman konsultasi
-│       │   ├── SOAPResult.jsx           # Tampilan detail catatan SOAP & tombol aksi
-│       │   ├── SOAPResult.css           # Styling hasil SOAP
-│       │   ├── History.jsx              # Tampilan RME Longitudinal Rumah Sakit
-│       │   └── History.css              # Styling RME ala Puskesmas/Rumah Sakit
-│       └── services/
-│           ├── api.js                   # Client fetch HTTP ke backend API
-│           └── pdfService.js            # Generator dokumen PDF rekam medis resmi (jsPDF)
-└── DOKUMENTASI_SISTEM.md                # File dokumentasi ini
-```
+   │       │   ├── Consultation.jsx         # Halaman perekaman suara & filter 2 tahap
+   │       │   ├── Consultation.css         # Styling halaman konsultasi
+   │       │   ├── SOAPResult.jsx           # Tampilan detail catatan SOAP & tombol aksi
+   │       │   ├── SOAPResult.css           # Styling hasil SOAP
+   │       │   ├── History.jsx              # Tampilan RME Longitudinal Rumah Sakit
+   │       │   └── History.css              # Styling RME ala Puskesmas/Rumah Sakit
+   │       └── services/
+   │           ├── api.js                   # Client fetch HTTP ke backend hgg
+   │           └── pdfService.js            # Generator dokumen PDF rekam medis resmi (jsPDF)
+   └── DOKUMENTASI_SISTEM.md                # File dokumentasi ini
+   ```
 
----
+   ---
 
-## 6. SKEMA BASIS DATA (DATABASE SCHEMA)
+   ## 6. SKEMA BASIS DATA (DATABASE SCHEMA)
 
-Aplikasi menggunakan **SQLite** (`better-sqlite3`) yang ringan, cepat, tanpa perlu setup server database eksternal:
+   Aplikasi menggunakan **SQLite** (`better-sqlite3`) yang ringan, cepat, tanpa perlu setup server database eksternal:
 
-### Tabel `consultations`
-| Nama Kolom | Tipe Data | Keterangan |
-| :--- | :--- | :--- |
-| `id` | `INTEGER PRIMARY KEY AUTOINCREMENT` | ID unik konsultasi |
-| `patient_name` | `TEXT` | Nama lengkap pasien (misal: "Alfonso") |
-| `patient_id` | `TEXT` | Nomor Rekam Medis (misal: "001") |
-| `consultation_date` | `TEXT` | Tanggal periksa (format `YYYY-MM-DD`) |
-| `transcript` | `TEXT` | Transkrip percakapan dokter dan pasien |
-| `subjective` | `TEXT` | Catatan Subjektif (keluhan, riwayat penyakit, kutipan Jawa) |
-| `objective` | `TEXT` | Catatan Objektif (tanda vital, status lokalis, lab) |
-| `assessment` | `TEXT` | Catatan Asesmen (diagnosis kerja + kode ICD-10) |
-| `plan` | `TEXT` | Catatan Rencana (obat, dosis, edukasi, rujukan) |
-| `created_at` | `TEXT` | Timestamp penyimpanan (`CURRENT_TIMESTAMP`) |
+   ### Tabel `consultations`
+   | Nama Kolom | Tipe Data | Keterangan |
+   | :--- | :--- | :--- |
+   | `id` | `INTEGER PRIMARY KEY AUTOINCREMENT` | ID unik konsultasi |
+   | `patient_name` | `TEXT` | Nama lengkap pasien (misal: "Alfonso") |
+   | `patient_id` | `TEXT` | Nomor Rekam Medis (misal: "001") |
+   | `consultation_date` | `TEXT` | Tanggal periksa (format `YYYY-MM-DD`) |
+   | `transcript` | `TEXT` | Transkrip percakapan dokter dan pasien |
+   | `subjective` | `TEXT` | Catatan Subjektif (keluhan, riwayat penyakit, kutipan Jawa) |
+   | `objective` | `TEXT` | Catatan Objektif (tanda vital, status lokalis, lab) |
+   | `assessment` | `TEXT` | Catatan Asesmen (diagnosis kerja + kode ICD-10) |
+   | `plan` | `TEXT` | Catatan Rencana (obat, dosis, edukasi, rujukan) |
+   | `created_at` | `TEXT` | Timestamp penyimpanan (`CURRENT_TIMESTAMP`) |
 
----
+   ---
 
-## 7. PANDUAN MENJALANKAN PROJECT
+   ## 7. PANDUAN MENJALANKAN PROJECT
 
-### 1. Jalankan Backend
-Buka terminal baru di folder `backend`:
-```bash
-cd backend
-npm run dev
-```
-Backend akan aktif di: `http://localhost:5000`
+   ### 1. Jalankan Backend
+   Buka terminal baru di folder `backend`:
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   Backend akan aktif di: `http://localhost:5000`
 
-### 2. Jalankan Frontend
-Buka terminal baru di folder `frontend`:
-```bash
-cd frontend
-npm run dev
-```
+   ### 2. Jalankan Frontend
+   Buka terminal baru di folder `frontend`:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
 Frontend akan aktif di: `http://localhost:5173`
 
 ---
